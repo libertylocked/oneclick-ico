@@ -28,24 +28,27 @@ contract BasicTokensale is Owned, TokensaleInterface {
         saleEndTime = _saleEndTime;
         salePrice = _salePrice;
     }
-
+    
     /**
      * fallback payable function
      * This is called by suckers who want to buy your token
      */
     function() public payable {
+        // the tokensale must be on for the buyer
+        require(isTokensaleOn(msg.sender));
         // must send enough to buy at least 1 coin
-        require(msg.value > salePrice);
-        uint tokensBuying = (msg.value / salePrice);
+        uint price = getPrice(msg.sender);
+        require(msg.value > getPrice(msg.sender));
+        uint tokensBuying = (msg.value / price);
         // make sure we have enough coins left to sell
         require(token.balanceOf(this) >= tokensBuying);
         // give the buyer the tokens
         token.transfer(msg.sender, tokensBuying);
         TokenSold(msg.sender, tokensBuying, msg.value);
     }
-
+    
     /* All the admin stuff */
-
+    
     /**
      * Set the address of the ERC20 token that this contract is selling.
      * This can only be called by admin and only be done once.
@@ -63,7 +66,7 @@ contract BasicTokensale is Owned, TokensaleInterface {
         token = _token;
         return true;
     }
-
+    
     function changeSaleStartTime(uint _saleStartTime)
         onlyAdmin
         public
@@ -72,7 +75,7 @@ contract BasicTokensale is Owned, TokensaleInterface {
         saleStartTime = _saleStartTime;
         return true;
     }
-
+    
     function changeSaleEndTime(uint _saleEndTime)
         onlyAdmin
         public
@@ -81,7 +84,7 @@ contract BasicTokensale is Owned, TokensaleInterface {
         saleEndTime = _saleEndTime;
         return true;
     }
-
+    
     function changeSalePrice(uint _salePrice)
         onlyAdmin
         public
@@ -90,7 +93,7 @@ contract BasicTokensale is Owned, TokensaleInterface {
         salePrice = _salePrice;
         return true;
     }
-
+    
     /**
      * Cash out baby
      */
@@ -102,9 +105,9 @@ contract BasicTokensale is Owned, TokensaleInterface {
         admin.transfer(this.balance);
         return true;
     }
-
+    
     /* TokensaleInterface implementation */
-
+    
     function getPrice(address buyer)
         view
         public
@@ -112,13 +115,13 @@ contract BasicTokensale is Owned, TokensaleInterface {
     {
         return salePrice;
     }
-
+    
     function isTokensaleOn(address buyer)
         view
         public
         returns (bool)
     {
-        return (block.timestamp >= saleStartTime &&
+        return (block.timestamp >= saleStartTime && 
             block.timestamp <= saleEndTime);
     }
 
