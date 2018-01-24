@@ -10,6 +10,6 @@ contract TokensaleInterface {
      * Get the price of token for the buyer
      * x wei per token
      */
-    function getPrice(address buyer) view public returns (uint);
-    function isTokensaleOn(address buyer) view public returns (bool);
+    function getPriceFor(address buyer) view public returns (uint);
+    function isTokensaleOnFor(address buyer) view public returns (bool);
 }

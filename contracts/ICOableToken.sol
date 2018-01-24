@@ -1,9 +1,7 @@
 /**
  * ICOable token
  * Similar to HumanStandardToken, but with additional features like
- * trade locking until a timestamp.
- * Please deploy a Tokensale contract before deploying this, since the ICOable
- * token needs to know who the token seller contract is to enforce trade lock
+ * trade locking until a timestamp
  */
 
 pragma solidity ^0.4.18;
@@ -20,10 +18,10 @@ contract ICOableToken is StandardToken {
     address public tokenSeller;
 
     /* Modifiers */
-    modifier requireTradable() {
-        // tokenseller can sell tokens anytime without restrictions
+    modifier requireTradableFrom(address _from) {
+        // tokenseller can move tokens anytime without restriction
         // others can only trade after the tradable timestamp
-        if (msg.sender != tokenSeller) {
+        if (_from != tokenSeller) {
             require(block.timestamp > tradableAfter);
         }
         _;
@@ -48,7 +46,7 @@ contract ICOableToken is StandardToken {
     }
 
     function transfer(address _to, uint256 _value)
-        requireTradable
+        requireTradableFrom(msg.sender)
         public
         returns (bool success)
     {
@@ -56,7 +54,7 @@ contract ICOableToken is StandardToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value)
-        requireTradable
+        requireTradableFrom(_from)
         public
         returns (bool success)
     {

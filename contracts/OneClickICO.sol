@@ -48,14 +48,15 @@ contract OneClickICO is Owned {
         public
         returns (address, address)
     {
-        // deploy tokensale
-        BasicTokensale sale = new BasicTokensale(_saleStartTime, _saleEndTime,
-            _salePrice, msg.sender);
+        address tokenSeller = msg.sender;
         // deploy the coin
         ERC20Interface token = new ICOableToken(_initialAmount, _tokenName,
-            _decimalUnits, _tokenSymbol, _tradableAfter, sale);
-        // set the coin in sale contract
-        sale.setTokenContract(token);
+            _decimalUnits, _tokenSymbol, _tradableAfter, tokenSeller);
+        // deploy tokensale
+        BasicTokensale sale = new BasicTokensale(token, tokenSeller,
+            _saleStartTime, _saleEndTime, _salePrice, tokenSeller);
+        // give tokensale allowance to transfer all the tokens
+        token.approve(sale, _initialAmount);
         return (sale, token);
     }
 }

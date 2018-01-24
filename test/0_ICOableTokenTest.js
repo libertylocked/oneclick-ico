@@ -1,3 +1,4 @@
+/* eslint-disable */
 const ICOableToken = artifacts.require("./ICOableToken.sol");
 
 const bn = require("bignumber.js")
