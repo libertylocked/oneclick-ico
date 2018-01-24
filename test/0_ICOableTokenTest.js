@@ -84,5 +84,67 @@ contract("ICOableToken", (accounts) => {
         new bn(10).toString())
     })
   })
+  describe("transfer from", () => {
+    it("should allow transfer from seller during trade lock, when allowance is given to seller", async () => {
+      let tradableAfter = new Date();
+      tradableAfter.setDate(tradableAfter.getDate() + 1);
+      const tradableAfterUnix = Math.round(tradableAfter.getTime() / 1000);
+      const instance = await ICOableToken.new(1000000000,
+        "bullshit token", 3, "BST", tradableAfterUnix, accounts[0], {
+          from: accounts[0]
+        })
+      await instance.approve(accounts[0], 10, { from: accounts[0] });
+      const tx = await instance.transferFrom(accounts[0], accounts[1], 10, { from: accounts[0] })
+      assert.equal(tx.logs[0].event, "Transfer")
+      assert.equal(tx.logs[0].args._from, accounts[0])
+      assert.equal(tx.logs[0].args._to, accounts[1])
+      assert.equal(tx.logs[0].args._value, 10)
+      assert.equal((await instance.balanceOf(accounts[1])).toString(),
+        new bn(10).toString())
+      assert.equal((await instance.balanceOf(accounts[0])).toString(),
+        new bn(1000000000 - 10).toString())
+    })
+    it("should allow transfer from seller during trade lock, when allowance is given to someone else", async () => {
+      let tradableAfter = new Date();
+      tradableAfter.setDate(tradableAfter.getDate() + 1);
+      const tradableAfterUnix = Math.round(tradableAfter.getTime() / 1000);
+      const instance = await ICOableToken.new(1000000000,
+        "bullshit token", 3, "BST", tradableAfterUnix, accounts[0], {
+          from: accounts[0]
+        })
+      // seller gives accounts[1] permission to spend 10 coins
+      // accounts[1] then sends the 10 coins to accounts[2]
+      await instance.approve(accounts[1], 10, { from: accounts[0] })
+      const tx = await instance.transferFrom(accounts[0], accounts[2], 10, { from: accounts[1] })
+      assert.equal(tx.logs[0].event, "Transfer")
+      assert.equal(tx.logs[0].args._from, accounts[0])
+      assert.equal(tx.logs[0].args._to, accounts[2])
+      assert.equal(tx.logs[0].args._value, 10)
+      assert.equal((await instance.balanceOf(accounts[2])).toString(),
+        new bn(10).toString())
+      assert.equal((await instance.balanceOf(accounts[0])).toString(),
+        new bn(1000000000 - 10).toString())
+    })
+    it("should not allow transfer from non-sellers", async () => {
+      let tradableAfter = new Date();
+      tradableAfter.setDate(tradableAfter.getDate() + 1);
+      const tradableAfterUnix = Math.round(tradableAfter.getTime() / 1000);
+      const instance = await ICOableToken.new(1000000000,
+        "bullshit token", 3, "BST", tradableAfterUnix, accounts[0], {
+          from: accounts[0]
+        })
+      // seller first gives accounts[1] 10 tokens
+      await instance.transfer(accounts[1], 10, { from: accounts[0] })
+      // accounts[1] gives allowance to accounts[2]
+      await instance.approve(accounts[2], 10, { from: accounts[1] })
+      // accounts[2] attempts to move the 10 coins to him/herself, but it should fail
+      try {
+        await instance.transferFrom(accounts[1], accounts[2], 10, { from: accounts[2] })
+        assert.fail()
+      } catch (err) {
+        assertRevert(err)
+      }
+    })
+  })
 
 })
