@@ -43,7 +43,7 @@ contract BasicTokensale is Owned, TokensaleInterface {
         require(isTokensaleOnFor(msg.sender));
         // must send enough to buy at least 1 coin
         uint price = getPriceFor(msg.sender);
-        require(msg.value > price);
+        require(msg.value >= price);
         uint tokensBuying = (msg.value / price);
         // make sure we have enough coins left to sell
         require(token.allowance(tokenSeller, this) >= tokensBuying &&
