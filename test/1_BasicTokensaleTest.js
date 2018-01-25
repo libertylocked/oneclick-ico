@@ -3,17 +3,7 @@ const ICOableToken = artifacts.require("./ICOableToken.sol")
 const BasicTokensale = artifacts.require("./BasicTokensale.sol")
 
 const bn = require("bignumber.js")
-const { assertRevert } = require("./helper")
-
-const newICOPeriod = (hoursBefore, hoursAfter) => {
-  let saleStartTime = new Date()
-  saleStartTime.setHours(saleStartTime.getHours() + hoursBefore)
-  const saleStartTimeUnix = Math.round(saleStartTime.getTime() / 1000)
-  let saleEndTime = new Date()
-  saleEndTime.setHours(saleEndTime.getHours() + hoursAfter)
-  const saleEndTimeUnix = Math.round(saleEndTime.getTime() / 1000)
-  return { saleStartTimeUnix, saleEndTimeUnix }
-}
+const { assertRevert, timestampWithOffset } = require("./helper")
 
 contract("BasicTokensale", (accounts) => {
   let tradableToken, nonTradableToken;
@@ -38,7 +28,8 @@ contract("BasicTokensale", (accounts) => {
   })
   describe("constructor", () => {
     it("should set all params correctly", async () => {
-      const { saleStartTimeUnix, saleEndTimeUnix } = newICOPeriod(-1, 1)
+      const saleStartTimeUnix = timestampWithOffset(-1)
+      const saleEndTimeUnix = timestampWithOffset(1)
       const instance = await BasicTokensale.new(tradableToken.address, accounts[0],
         saleStartTimeUnix, saleEndTimeUnix, 1, accounts[0])
       assert.equal(await instance.token(), tradableToken.address)
@@ -50,7 +41,8 @@ contract("BasicTokensale", (accounts) => {
   })
   describe("fallback function (buy token)", () => {
     it("should allow contribution if the sale is on", async () => {
-      const { saleStartTimeUnix, saleEndTimeUnix } = newICOPeriod(-1, 1)
+      const saleStartTimeUnix = timestampWithOffset(-1)
+      const saleEndTimeUnix = timestampWithOffset(1)
       const instance = await BasicTokensale.new(nonTradableToken.address, accounts[0],
         saleStartTimeUnix, saleEndTimeUnix, 10, accounts[0])
       // once we have the tokensale, seller must give it allowance to sell the coins
@@ -64,7 +56,8 @@ contract("BasicTokensale", (accounts) => {
       assert.equal(tx.logs[0].args.value, 10)
     })
     it("should not allow contribution before sale starts", async () => {
-      const { saleStartTimeUnix, saleEndTimeUnix } = newICOPeriod(1, 10)
+      const saleStartTimeUnix = timestampWithOffset(1)
+      const saleEndTimeUnix = timestampWithOffset(10)
       const instance = await BasicTokensale.new(nonTradableToken.address, accounts[0],
         saleStartTimeUnix, saleEndTimeUnix, 10, accounts[0])
       // give allowance
@@ -79,7 +72,8 @@ contract("BasicTokensale", (accounts) => {
       }
     })
     it("should not allow contribution after sale ends", async () => {
-      const { saleStartTimeUnix, saleEndTimeUnix } = newICOPeriod(-10, -1)
+      const saleStartTimeUnix = timestampWithOffset(-10)
+      const saleEndTimeUnix = timestampWithOffset(-1)
       const instance = await BasicTokensale.new(nonTradableToken.address, accounts[0],
         saleStartTimeUnix, saleEndTimeUnix, 10, accounts[0])
       // give allowance

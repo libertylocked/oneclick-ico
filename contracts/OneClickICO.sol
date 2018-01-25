@@ -36,6 +36,11 @@ contract OneClickICO is Owned {
             decimalUnits, tokenSymbol);
     }
 
+    /**
+     * Deploys an ERC20 and a Tokensale contract, given the parameters
+     * The sender will be the owner of all minted coins. 100% of the coins
+     * will be approved for spending by the tokensale contract
+     */
     function createBasicTokensale(
         uint _saleStartTime,
         uint _saleEndTime,
