@@ -55,24 +55,6 @@ contract BasicTokensale is Owned, TokensaleInterface {
 
     /* All the admin stuff */
 
-    /**
-     * Set the address of the ERC20 token that this contract is selling.
-     * This can only be called by admin and only be done once.
-     * Please make sure the tokensale owns some coins in your ERC20
-     * @param _token The address of the ERC20 token
-     * @return true if the operation is successful
-     */
-    function setTokenContract(ERC20Interface _token)
-        onlyAdmin
-        public
-        returns (bool)
-    {
-        require(token == address(0));
-        require(token.balanceOf(this) > 0);
-        token = _token;
-        return true;
-    }
-
     function changeSaleStartTime(uint _saleStartTime)
         onlyAdmin
         public

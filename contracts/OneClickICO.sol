@@ -12,6 +12,8 @@ import "./BasicTokensale.sol";
 import "./ICOableToken.sol";
 
 contract OneClickICO is Owned {
+    event ICOCreated(address indexed seller, address token, address tokenSale);
+
     function OneClickICO(address _initialAdmin)
         Owned(_initialAdmin)
         public
@@ -55,6 +57,8 @@ contract OneClickICO is Owned {
             _saleStartTime, _saleEndTime, _salePrice, tokenSeller);
         // give tokensale allowance to transfer all the tokens
         token.approve(sale, _initialAmount);
+        // emit event
+        ICOCreated(tokenSeller, address(token), address(sale));
         return (sale, token);
     }
 }
