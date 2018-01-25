@@ -12,8 +12,6 @@ import "./BasicTokensale.sol";
 import "./ICOableToken.sol";
 
 contract OneClickICO is Owned {
-    enum TokensaleType { Basic }
-
     function OneClickICO(address _initialAdmin)
         Owned(_initialAdmin)
         public
