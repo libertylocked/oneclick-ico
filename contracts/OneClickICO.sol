@@ -14,6 +14,8 @@ import "./ICOableToken.sol";
 contract OneClickICO is Owned {
     event ICOCreated(address indexed seller, address token, address tokenSale);
 
+    string public version = "0.1";
+
     function OneClickICO(address _initialAdmin)
         Owned(_initialAdmin)
         public
