@@ -109,8 +109,8 @@ contract BasicTokensale is Owned, TokensaleInterface {
         public
         returns (bool)
     {
-        return (block.timestamp >= saleStartTime &&
-            block.timestamp <= saleEndTime);
+        return (token.allowance(tokenSeller, this) > 0 &&
+            block.timestamp >= saleStartTime && block.timestamp <= saleEndTime);
     }
 
 }

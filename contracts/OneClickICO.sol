@@ -37,9 +37,10 @@ contract OneClickICO is Owned {
     }
 
     /**
-     * Deploys an ERC20 and a Tokensale contract, given the parameters
-     * The sender will be the owner of all minted coins. 100% of the coins
-     * will be approved for spending by the tokensale contract
+     * Deploys an ERC20 and a Tokensale contract, given the parameters.
+     * The sender will be the owner of all minted coins.
+     * Once the contracts are deployed, the sender must give allowance to
+     * the tokensale contract, whatever amount the sender wishes to sell.
      */
     function createBasicTokensale(
         uint _saleStartTime,
@@ -60,10 +61,11 @@ contract OneClickICO is Owned {
         // deploy tokensale
         BasicTokensale sale = new BasicTokensale(token, tokenSeller,
             _saleStartTime, _saleEndTime, _salePrice, tokenSeller);
-        // give tokensale allowance to transfer all the tokens
-        token.approve(sale, _initialAmount);
         // emit event
         ICOCreated(tokenSeller, address(token), address(sale));
+        // NOTE: the sender must give the tokensale contract the allowance
+        // before the tokensale can start!
+        // token.approve(sale, whateverAmount);
         return (sale, token);
     }
 }
