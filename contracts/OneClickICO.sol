@@ -56,6 +56,7 @@ contract OneClickICO is Owned {
         public
         returns (address, address)
     {
+        require(_saleStartTime < _saleEndTime);
         address tokenSeller = msg.sender;
         // deploy the coin
         ERC20Interface token = new ICOableToken(_initialAmount, _tokenName,
