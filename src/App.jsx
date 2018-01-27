@@ -1,12 +1,12 @@
 import React, { Component } from "react"
 import ReactFileDownload from "react-file-download"
+import TruffleContract from "truffle-contract"
+import Bluebird from "bluebird"
 import * as OneClickICOArtifact from "../build/contracts/OneClickICO.json"
 import * as BasicTokensaleArtifact from "../build/contracts/BasicTokensale.json"
 import * as ERC20InterfaceArtifact from "../build/contracts/ERC20Interface.json"
-import * as Bluebird from "bluebird"
 import getWeb3 from "./utils/getWeb3"
 
-const TruffleContract = require("truffle-contract")
 
 import "./css/oswald.css"
 import "./css/open-sans.css"
