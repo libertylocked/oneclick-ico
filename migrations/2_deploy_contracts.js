@@ -1,6 +1,6 @@
 /* eslint-disable */
-var SimpleStorage = artifacts.require("./SimpleStorage.sol");
+const OneClickICO = artifacts.require("./OneClickICO.sol")
 
-module.exports = function(deployer) {
-  deployer.deploy(SimpleStorage);
+module.exports = (deployer) => {
+  deployer.deploy(OneClickICO);
 };
