@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+import bn from "bignumber.js"
 import ReactFileDownload from "react-file-download"
 import TruffleContract from "truffle-contract"
 import Bluebird from "bluebird"
@@ -68,13 +69,14 @@ class App extends Component {
   handleDeployClick = async () => {
     // read all the params
     const tokenName = this.tokenName.value;
-    const tokenDecimals = parseInt(this.tokenDecimals.value, 10)
+    const tokenDecimals = new bn(this.tokenDecimals.value);
     const tokenSymbol = this.tokenSymbol.value
     const tokenTradableAfter = parseInt(this.tokenTradableAfter.value, 10)
-    const tokenTotalSupply = parseInt(this.tokenTotalSupply.value, 10)
+    const tokenTotalSupply = new bn(this.tokenTotalSupply.value)
+      .mul(Math.pow(10, tokenDecimals))
     const saleStart = parseInt(this.saleStart.value, 10)
     const saleEnd = parseInt(this.saleEnd.value, 10)
-    const salePrice = parseInt(this.salePrice.value, 10)
+    const salePrice = new bn(this.salePrice.value)
 
     console.log(saleStart, saleEnd, salePrice, tokenTotalSupply,
       tokenName, tokenDecimals, tokenSymbol, tokenTradableAfter)
@@ -139,7 +141,7 @@ class App extends Component {
 
     ReactFileDownload(JSON.stringify({
       TokenAddr: this.state.tokenInstance.address,
-      SaleAddress: this.state.saleInstance.address,
+      SaleAddr: this.state.saleInstance.address,
     }), "ico-config.json")
   }
 
@@ -193,7 +195,7 @@ class App extends Component {
                 </div>
                 <div>
                   <label>Decimal Units
-                    <input type="number" name="tokenDecimals" min="0" defaultValue="9"
+                    <input type="number" name="tokenDecimals" min="0" defaultValue="18"
                       ref={(c) => this.tokenDecimals = c} />
                   </label>
                 </div>
@@ -206,7 +208,7 @@ class App extends Component {
                 <div>
                   <label>Total Supply
                     <input type="number" name="tokenTotalSupply" min="0"
-                      defaultValue="1000000000000" ref={(c) => this.tokenTotalSupply = c} />
+                      defaultValue="1000000" ref={(c) => this.tokenTotalSupply = c} />
                   </label>
                 </div>
                 <div>
@@ -234,7 +236,7 @@ class App extends Component {
                   </label>
                 </div>
                 <div>
-                  <label>Sale Price (x wei per your token)
+                  <label>Sale Price (x wei per min unit of your token)
                   <input type="number" name="salePrice" min="0"
                       defaultValue="1"
                       ref={(c) => this.salePrice = c} />
