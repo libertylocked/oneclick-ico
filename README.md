@@ -17,3 +17,7 @@ Deploy your own ERC20 token and a tokensale just with a few clicks.
 - Import the wallet seed into metamask
   - `candy maple cake sugar pudding cream honey rich smooth crumble sweet treat`
 - Set RPC to testrpc which is http://localhost:7545
+
+# Demo on testnet
+- The contracts are deployed on Ropsten testnet
+- Simply run the webpack devserver with Metamask set to Ropsten
