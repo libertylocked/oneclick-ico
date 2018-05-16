@@ -248,7 +248,7 @@ class App extends Component {
                 <p>Please click those buttons in order from left to right</p>
                 <button onClick={() => this.handleDeployClick()}>Deploy!</button>
                 <button onClick={() => this.handleActivateClick()}>Activate ICO!</button>
-                <button>Download Tokensale Website Template</button>
+                <a href="https://ipfs.io/ipfs/QmeULPD4oGnuK74f4Jxroys2ymgUfFaUaxJVAd9CzeNaWc">Download Tokensale Website Template</a>
                 <button onClick={() => this.handleConfigClick()}>Download Tokensale Config</button>
               </div>
             </div>
