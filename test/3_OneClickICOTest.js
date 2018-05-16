@@ -15,7 +15,7 @@ contract("OneClickICO", (accounts) => {
       const seller = accounts[1]
       const investor = accounts[2]
       const totalSupply = 1000000000000
-      const instance = await OneClickICO.new()
+      const instance = await OneClickICO.new(accounts[0])
       const tx = await instance.createBasicTokensale(saleStartTimeUnix,
         saleEndTimeUnix, 10, totalSupply, "bullshit token",
         3, "BST", tradableAfter, { from: seller })
@@ -28,6 +28,8 @@ contract("OneClickICO", (accounts) => {
       const sale = BasicTokensale.at(tx.logs[0].args.tokenSale)
       // the seller should own all the supply
       assert.equal(await token.balanceOf(seller), totalSupply)
+      // platform addr should be set
+      assert.equal(await sale.platAddr(), instance.address)
       // give allowance to the tokensale from the seller
       await token.approve(sale.address, totalSupply, { from: seller })
       assert.equal((await token.allowance(seller, sale.address)).toNumber(),
@@ -41,6 +43,8 @@ contract("OneClickICO", (accounts) => {
       // investor should have 10 coins
       assert.equal((await token.balanceOf(investor)).toNumber(), 10)
       assert.equal((await token.balanceOf(seller)).toNumber(), totalSupply - 10)
+      // cash out
+      const txWithdraw = sale.withdraw({ from: seller })
     })
   })
 })

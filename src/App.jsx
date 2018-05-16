@@ -85,7 +85,7 @@ class App extends Component {
       tokenSymbol, tokenTradableAfter, {
         from: this.state.account,
         // XXX: give a fuck ton of gas
-        gas: 2000000
+        gas: 3000000
       })
     // get the token and sale addresses from the shit
     const tokenAddr = tx.logs[0].args.token;

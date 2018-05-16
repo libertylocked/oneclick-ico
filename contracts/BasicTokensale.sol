@@ -1,5 +1,7 @@
 /**
- * Basic tokensale contract, no-frills.
+ * XXX replace this with zeppelin-solidity/crowdsale contracts
+ *
+ * Basic tokensale contract with platform fee
  * To get this Takesale to work, the seller must first give allowance to
  * the tokensale contract in the ERC20
  */
@@ -9,13 +11,20 @@ pragma solidity ^0.4.18;
 import "./Owned.sol";
 import "./ERC20Interface.sol";
 import "./TokensaleInterface.sol";
+import "node_modules/zeppelin-solidity/contracts/math/SafeMath.sol";
 
 contract BasicTokensale is Owned, TokensaleInterface {
+    using SafeMath for uint256;
+
     ERC20Interface public token;
     address public tokenSeller;
     uint public saleStartTime;
     uint public saleEndTime;
     uint public salePrice; // how much wei per token?
+
+    // platform fees and stuff
+    uint public platFeePercent = 10; // XXX
+    address public platAddr;
 
     function BasicTokensale(
         ERC20Interface _token,
@@ -27,6 +36,7 @@ contract BasicTokensale is Owned, TokensaleInterface {
         Owned(_initialAdmin)
         public
     {
+        platAddr = msg.sender;
         token = _token;
         tokenSeller = _tokenSeller;
         saleStartTime = _saleStartTime;
@@ -44,10 +54,12 @@ contract BasicTokensale is Owned, TokensaleInterface {
         // must send enough to buy at least 1 coin
         uint price = getPriceFor(msg.sender);
         require(msg.value >= price);
-        uint tokensBuying = (msg.value / price);
+        uint tokensBuying = msg.value.div(price);
         // make sure we have enough coins left to sell
-        require(token.allowance(tokenSeller, this) >= tokensBuying &&
-            token.balanceOf(tokenSeller) >= tokensBuying);
+        require(
+            token.allowance(tokenSeller, this) >= tokensBuying &&
+            token.balanceOf(tokenSeller) >= tokensBuying
+            );
         // give the buyer the tokens
         token.transferFrom(tokenSeller, msg.sender, tokensBuying);
         TokenSold(msg.sender, tokensBuying, msg.value);
@@ -90,7 +102,10 @@ contract BasicTokensale is Owned, TokensaleInterface {
         public
         returns (bool)
     {
-        admin.transfer(this.balance);
+        // XXX use withdraw pattern
+        uint platFees = address(this).balance.div(100).mul(platFeePercent);
+        platAddr.transfer(platFees);
+        admin.transfer(address(this).balance);
         return true;
     }
 

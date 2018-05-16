@@ -22,6 +22,8 @@ contract OneClickICO is Owned {
     {
     }
 
+    function() payable public {}
+
     /**
      * Deploy a token contract
      * The OneClickICO contract will be the owner of all minted tokens
@@ -68,7 +70,11 @@ contract OneClickICO is Owned {
         ICOCreated(tokenSeller, address(token), address(sale));
         // NOTE: the sender must give the tokensale contract the allowance
         // before the tokensale can start!
-        // token.approve(sale, whateverAmount);
+        // like this token.approve(sale, whateverAmount);
         return (sale, token);
+    }
+
+    function withdraw() onlyAdmin public {
+        admin.transfer(address(this).balance);
     }
 }

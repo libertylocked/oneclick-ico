@@ -55,7 +55,8 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-file-download": "^0.3.5",
-    "web3": "^0.20.4"
+    "web3": "^0.20.4",
+    "zeppelin-solidity": "^1.9.0"
   },
   "scripts": {
     "start": "node scripts/start.js",
